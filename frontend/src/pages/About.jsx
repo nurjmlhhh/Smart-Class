@@ -8,7 +8,7 @@
 
 import 'style.css'; // Import CSS file for styling
 
-const AboutPage = () => {
+const About = () => {
   return (
     <div className="about-container">
       <header className="about-header">
@@ -30,4 +30,4 @@ const AboutPage = () => {
   );
 };
 
-export default AboutPage;
+export default About;
