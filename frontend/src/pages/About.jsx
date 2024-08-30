@@ -6,7 +6,7 @@
 //     )
 // }
 
-import 'style.css'; // Import CSS file for styling
+import './style.css'; // Import CSS file for styling
 
 const About = () => {
   return (
