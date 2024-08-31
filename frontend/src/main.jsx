@@ -8,6 +8,8 @@ import Register from './pages/Register.jsx'
 import Login from './pages/Login.jsx'
 import { createBrowserRouter } from "react-router-dom";
 import { RouterProvider } from "react-router-dom";
+import Dashboard from './pages/Dashboard.jsx'
+import Class from './pages/Class.jsx'
 
 const router = createBrowserRouter([
   {
@@ -17,6 +19,10 @@ const router = createBrowserRouter([
       {
         path : "/",
         element : <Home />
+      },
+      {
+        path : "/dashboard",
+        element : <Dashboard />
       },
       {
         path : "/about",
@@ -29,6 +35,10 @@ const router = createBrowserRouter([
       {
         path : "/register",
         element : <Register />
+      },
+      {
+        path : "/class/:id",
+        element : <Class />
       },
     ],
   },

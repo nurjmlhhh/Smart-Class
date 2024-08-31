@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import {jwtDecode} from 'jwt-decode'; // Import jwt-decode
 
 function Login() {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
+        role: 'student', // Role default
     });
+
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -24,13 +28,23 @@ function Login() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(formData),
+                credentials: 'include'
             });
 
             if (response.ok) {
-                const result = await response.json();
-                alert(result.message);
-                localStorage.setItem('token', result.token);
-                navigate('/');
+                const result = await response.json(); // Parsing response as JSON
+                alert("Login berhasil");
+
+                // Assuming result.token contains the JWT token
+                Cookies.set('token', result.token, { expires: 1 }); // Expires in 1 day
+                console.log(Cookies.get("token")); // Log token to console
+
+                // Decode the token
+                const decodedToken = jwtDecode(result.token);
+                console.log("Decoded Token:", decodedToken); // Log decoded token to console
+
+                // Redirect to home page after successful login
+                navigate("/");
             } else {
                 const errorText = await response.text();
                 alert(`Error: ${errorText}`);
@@ -43,7 +57,7 @@ function Login() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                 <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Login</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -54,9 +68,10 @@ function Login() {
                             value={formData.username} 
                             onChange={handleChange} 
                             required 
-                            className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
+                    
                     <div>
                         <label className="block text-gray-600">Password:</label>
                         <input 
@@ -65,8 +80,21 @@ function Login() {
                             value={formData.password} 
                             onChange={handleChange} 
                             required 
-                            className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
+                    </div>
+                    <div>
+                        <label className="block text-gray-600">Role:</label>
+                        <select 
+                            name="role" 
+                            value={formData.role} 
+                            onChange={handleChange} 
+                            required 
+                            className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                        </select>
                     </div>
                     <button 
                         type="submit" 

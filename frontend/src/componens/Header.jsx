@@ -11,6 +11,14 @@ export default function Header() {
                     <ul className="flex space-x-6">
                         <li>
                             <Link 
+                                to="/dashboard" 
+                                className="hover:text-blue-300 transition duration-300"
+                            >
+                                Dashboard
+                            </Link>
+                        </li>
+                        <li>
+                            <Link 
                                 to="/" 
                                 className="hover:text-blue-300 transition duration-300"
                             >
