@@ -40,7 +40,7 @@ function Login() {
                 console.log(Cookies.get("token")); // Log token to console
 
                 // Decode the token
-                const decodedToken = jwtDecode(result.token);
+                const decodedToken = jwtDecode(result.token || null);
                 console.log("Decoded Token:", decodedToken); // Log decoded token to console
 
                 // Redirect to home page after successful login

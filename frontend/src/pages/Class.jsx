@@ -1,22 +1,28 @@
 import { useEffect, useState } from "react";
-import {jwtDecode} from 'jwt-decode'; // Perbaikan pada import jwtDecode
+// import { jwtDecode } from "jwt-decode"; // Perbaikan pada import jwtDecode
 import Cookies from "js-cookie";
+import { useParams } from "react-router-dom";
 
 export default function Class() {
   const [posts, setPosts] = useState([]);
   const [updatePost, setUpdatePost] = useState(null);
   const [newPost, setNewPost] = useState({ deskripsi: "" });
-  const token = Cookies.get("token");
-  const [idClass, setIdClass] = useState(0);
-//   const { id_class } = useParams();
+  const token = Cookies.get("token") ? Cookies.get("token") : null;
+  // const [idClass, setIdClass] = useState(0);
+  const {id}  = useParams();
 
+
+  useEffect(() => {
+    // setIdClass(jwtDecode(Cookies.get("token")).id);
+  },[]);
+
+  console.log(id);
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/posts/${idClass}`, {
+        const response = await fetch(`http://localhost:3000/api/posts/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         if (!response.ok) {
           throw new Error(
             "Gagal mengambil data post, status: " + response.status
@@ -31,14 +37,10 @@ export default function Class() {
     };
 
     fetchPosts(); // Memanggil fungsi async di dalam useEffect
-  }, [idClass, token]); // Hanya tergantung pada token
-
-  useEffect(() => {
-    setIdClass(jwtDecode(Cookies.get("token")).id);
-  }, []);
+  }, [id, token]); // Hanya tergantung pada token
 
   const handleAddNewPost = async () => {
-    const postData = { ...newPost, id_class: idClass };
+    const postData = { ...newPost, id_class: id };
     try {
       const response = await fetch(`http://localhost:3000/api/post`, {
         method: "POST",

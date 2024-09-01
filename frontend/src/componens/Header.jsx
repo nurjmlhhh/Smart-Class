@@ -14,7 +14,7 @@ export default function Header() {
                                 to="/dashboard" 
                                 className="hover:text-blue-300 transition duration-300"
                             >
-                                Dashboard
+                                Home
                             </Link>
                         </li>
                         <li>
@@ -22,9 +22,10 @@ export default function Header() {
                                 to="/" 
                                 className="hover:text-blue-300 transition duration-300"
                             >
-                                Home
+                                Dashboard
                             </Link>
                         </li>
+
                         <li>
                             <Link 
                                 to="/about" 
