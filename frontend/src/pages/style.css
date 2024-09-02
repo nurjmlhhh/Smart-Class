@@ -1,4 +1,4 @@
-.about-container {
+/* .about-container {
     font-family: Arial, sans-serif;
     margin: 0 auto;
     padding: 20px;
@@ -49,5 +49,171 @@
   
   .about-footer p {
     margin: 0;
+  }
+   */
+
+   .dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .add-btn, .sort-btn, .logout-btn {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .add-btn:hover, .sort-btn:hover, .logout-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .search-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .search-input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 200px;
+  }
+  
+  .class-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .class-card {
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    background-color: white;
+    transition: transform 0.2s;
+    cursor: pointer;
+  }
+  
+  .class-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .class-card h2 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    font-weight: bold;
+  }
+  
+  .class-card p {
+    margin: 0;
+    color: #777;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  
+  .delete-btn, .edit-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  
+  .delete-btn {
+    color: #e74c3c;
+    margin-right: 10px;
+  }
+  
+  .edit-btn {
+    color: #3498db;
+  }
+  
+  .form-container {
+    margin-top: 40px;
+  }
+  
+  form {
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    background-color: white;
+  }
+  
+  form h3 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .save-btn, .cancel-btn {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .save-btn {
+    margin-right: 10px;
+  }
+  
+  .cancel-btn {
+    background-color: #ccc;
+  }
+  
+  .logout-container {
+    margin-top: 60px;
+    text-align: center;
+  }
+  
+  .logout-container h1 {
+    font-size: 36px;
+    color: #007bff;
+    margin-bottom: 20px;
+  }
+  
+  .logout-container .logout-btn {
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 5px;
   }
   

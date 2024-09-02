@@ -1,7 +1,8 @@
+import "../pages/login.css";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import {jwtDecode} from 'jwt-decode'; // Import jwt-decode
+import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -11,6 +12,12 @@ function Login() {
     });
 
     const navigate = useNavigate();
+
+    const handleLogout = () => {
+        Cookies.remove('token');
+        alert('Logged out successfully!');
+        navigate('/login');
+    };
 
     const handleChange = (e) => {
         setFormData({
@@ -56,53 +63,68 @@ function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-                <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Login</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-gray-600">Username:</label>
-                        <input 
-                            type="text" 
-                            name="username" 
-                            value={formData.username} 
-                            onChange={handleChange} 
-                            required 
-                            className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                    
-                    <div>
-                        <label className="block text-gray-600">Password:</label>
-                        <input 
-                            type="password" 
-                            name="password" 
-                            value={formData.password} 
-                            onChange={handleChange} 
-                            required 
-                            className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-gray-600">Role:</label>
-                        <select 
-                            name="role" 
-                            value={formData.role} 
-                            onChange={handleChange} 
-                            required 
-                            className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <div className="login-container">
+            <div className="login-form-container">
+                <div className="light-effect"></div>
+                <div className="login-form">
+                    <h2 className="login-title">Login</h2>
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            {/* <label className="form-label">Username:</label> */}
+                            <input 
+                                type="text" 
+                                name="username" 
+                                value={formData.username} 
+                                onChange={handleChange} 
+                                required 
+                                className="form-input" placeholder="Username"
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            {/* <label className="form-label">Password:</label> */}
+                            <input 
+                                type="password" 
+                                name="password" 
+                                value={formData.password} 
+                                onChange={handleChange} 
+                                required 
+                                className="form-input" placeholder="Password"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Role:</label>
+                            <select 
+                                name="role" 
+                                value={formData.role} 
+                                onChange={handleChange} 
+                                required 
+                                className="form-select"
+                            >
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher</option>
+                            </select>
+                        </div>
+                        <button 
+                            type="submit" 
+                            className="submit-button"
                         >
-                            <option value="student">Student</option>
-                            <option value="teacher">Teacher</option>
-                        </select>
+                            Login
+                        </button>
+                    </form>
+                    <div className="register-link">
+                        <p>Belum punya akun? <a href="/register">Daftar di sini</a></p>
                     </div>
-                    <button 
-                        type="submit" 
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
-                    >
-                        Login
-                    </button>
-                </form>
+                </div>
+            </div>
+            <div className="logout-container">
+                <h1 className="welcome-title">Selamat Datang</h1>
+                <button
+                    onClick={handleLogout}
+                    className="logout-button"
+                >
+                    Logout
+                </button>
             </div>
         </div>
     );

@@ -1,43 +1,67 @@
 import { useEffect, useState } from "react";
-// import { jwtDecode } from "jwt-decode"; // Perbaikan pada import jwtDecode
 import Cookies from "js-cookie";
 import { useParams } from "react-router-dom";
+import "../pages/class.css";
 
 export default function Class() {
   const [posts, setPosts] = useState([]);
-  const [updatePost, setUpdatePost] = useState(null);
+  const [tasks, setTasks] = useState([]);
   const [newPost, setNewPost] = useState({ deskripsi: "" });
+  const [newTask, setNewTask] = useState({ title: "", deskripsi: "", deadline: "" });
+  const [updatePost, setUpdatePost] = useState(null);
+  const [updateTask, setUpdateTask] = useState(null);
+  const [showTasks, setShowTasks] = useState(false);
+  const [loadingPosts, setLoadingPosts] = useState(false);
+  const [loadingTasks, setLoadingTasks] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState(""); // "addPost", "updatePost", "addTask", "updateTask"
   const token = Cookies.get("token") ? Cookies.get("token") : null;
-  // const [idClass, setIdClass] = useState(0);
-  const {id}  = useParams();
+  const { id } = useParams();
 
+  const convertToDate = (isoString) => {
+    return isoString.split('T')[0];
+  };
 
-  useEffect(() => {
-    // setIdClass(jwtDecode(Cookies.get("token")).id);
-  },[]);
-
-  console.log(id);
   useEffect(() => {
     const fetchPosts = async () => {
+      setLoadingPosts(true);
       try {
         const response = await fetch(`http://localhost:3000/api/posts/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (!response.ok) {
-          throw new Error(
-            "Gagal mengambil data post, status: " + response.status
-          );
-        }
-
-        const data = await response.json(); // Parsing response ke JSON
-        setPosts(data); // Menyimpan data ke state
+        if (!response.ok) throw new Error("Gagal mengambil data post");
+        const data = await response.json();
+        setPosts(data);
       } catch (error) {
         console.error("Error fetching posts:", error.message);
+      } finally {
+        setLoadingPosts(false);
       }
     };
 
-    fetchPosts(); // Memanggil fungsi async di dalam useEffect
-  }, [id, token]); // Hanya tergantung pada token
+    const fetchTasks = async () => {
+      setLoadingTasks(true);
+      try {
+        const response = await fetch(`http://localhost:3000/api/task/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) throw new Error("Gagal mengambil data task");
+        const data = await response.json();
+        const formattedTasks = data.map(task => ({
+          ...task,
+          deadline: convertToDate(task.deadline),
+        }));
+        setTasks(formattedTasks);
+      } catch (error) {
+        console.error("Error fetching tasks:", error.message);
+      } finally {
+        setLoadingTasks(false);
+      }
+    };
+
+    fetchPosts();
+    fetchTasks();
+  }, [id, token]);
 
   const handleAddNewPost = async () => {
     const postData = { ...newPost, id_class: id };
@@ -50,178 +74,261 @@ export default function Class() {
         },
         body: JSON.stringify(postData),
       });
-
-      if (!response.ok) {
-        throw new Error(`Gagal menambah post, status: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error("Gagal menambah post");
       const addedPost = await response.json();
-      setPosts([...posts, addedPost]); // Update state posts dengan post baru yang ditambahkan
-      setNewPost({ deskripsi: "" }); // Reset form setelah sukses menambah post
+      setPosts([...posts, addedPost]);
+      setNewPost({ deskripsi: "" });
+      setShowPopup(false);
     } catch (error) {
       console.error("Error adding post:", error.message);
     }
   };
 
-  function handleDelete(id) {
-    if (confirm("Apakah anda yakin ingin menghapus post ini?")) {
-      fetch(`http://localhost:3000/api/post/${id}`, {
-        method: "DELETE",
+  const handleAddNewTask = async () => {
+    const taskData = { 
+      ...newTask, 
+      id_class: id, 
+      deadline: newTask.deadline 
+    };
+    try {
+      const response = await fetch(`http://localhost:3000/api/task`, {
+        method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      })
-        .then((response) => response.text())
-        .then((message) => {
-          setPosts((prev) => prev.filter((item) => item.id !== id));
-          alert(message);
-        })
-        .catch((error) => {
-          console.error("Error:", error.message);
-          alert("Terjadi kesalahan saat menghapus post");
-        });
-    }
-  }
-
-  function saveUpdate() {
-    fetch(`http://localhost:3000/api/post/${updatePost.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(updatePost),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("HTTP status " + response.status);
-        }
-        return response.json(); // Pastikan server mengembalikan JSON jika kamu akan mem-parsing ini.
-      })
-      .then(() => {
-        setPosts((prev) =>
-          prev.map((item) =>
-            item.id === updatePost.id ? { ...item, ...updatePost } : item
-          )
-        );
-        setUpdatePost(null);
-        alert("Post berhasil diperbarui!");
-      })
-      .catch((error) => {
-        console.error("Error:", error.message);
-        alert("Terjadi kesalahan saat memperbarui post: " + error.message);
+        body: JSON.stringify(taskData),
       });
-  }
+      if (!response.ok) throw new Error("Gagal menambah task");
+      const addedTask = await response.json();
+      setTasks([...tasks, addedTask]);
+      setNewTask({ title: "", deskripsi: "", deadline: "" });
+      setShowPopup(false);
+    } catch (error) {
+      console.error("Error adding task:", error.message);
+    }
+  };
+
+  const handleDeletePost = async (postId) => {
+    if (window.confirm("Apakah anda yakin ingin menghapus post ini?")) {
+      try {
+        const response = await fetch(`http://localhost:3000/api/post/${postId}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) throw new Error("Gagal menghapus post");
+        setPosts(posts.filter((post) => post.id !== postId));
+        alert("Post berhasil dihapus");
+      } catch (error) {
+        console.error("Error deleting post:", error.message);
+        alert("Terjadi kesalahan saat menghapus post");
+      }
+    }
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    if (window.confirm("Apakah anda yakin ingin menghapus task ini?")) {
+      try {
+        const response = await fetch(`http://localhost:3000/api/task/${taskId}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) throw new Error("Gagal menghapus task");
+        setTasks(tasks.filter((task) => task.id !== taskId));
+        alert("Task berhasil dihapus");
+      } catch (error) {
+        console.error("Error deleting task:", error.message);
+        alert("Terjadi kesalahan saat menghapus task");
+      }
+    }
+  };
+
+  const saveUpdatePost = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/post/${updatePost.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatePost),
+      });
+      if (!response.ok) throw new Error("Gagal memperbarui post");
+      const updatedPost = await response.json();
+      setPosts(posts.map((post) => (post.id === updatedPost.id ? updatedPost : post)));
+      setUpdatePost(null);
+      alert("Post berhasil diperbarui");
+      setShowPopup(false);
+    } catch (error) {
+      console.error("Error updating post:", error.message);
+      alert("Terjadi kesalahan saat memperbarui post");
+    }
+  };
+
+  const saveUpdateTask = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/task/${updateTask.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updateTask),
+      });
+  
+      const contentType = response.headers.get("content-type");
+      let responseData;
+      if (contentType && contentType.includes("application/json")) {
+        responseData = await response.json();
+      } else {
+        responseData = await response.text();
+      }
+  
+      if (!response.ok) throw new Error(responseData || "Gagal memperbarui task");
+      
+      if (typeof responseData === "string") {
+        alert(responseData);
+      } else {
+        setTasks(tasks.map((task) => (task.id === responseData.id ? responseData : task)));
+        setUpdateTask(null);
+        alert("Task berhasil diperbarui");
+        setShowPopup(false);
+      }
+    } catch (error) {
+      console.error("Error updating task:", error.message);
+      alert("Terjadi kesalahan saat memperbarui task");
+    }
+  };
+
+  const openPopup = (type) => {
+    setPopupType(type);
+    setShowPopup(true);
+  };
+
+  const closePopup = () => {
+    setShowPopup(false);
+    setPopupType("");
+  };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-xl font-semibold mb-4">Posts</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {posts.map((post) => (
-          <div key={post.id} className="bg-white shadow-md rounded-lg p-4">
-            <p className="text-gray-700">{post.deskripsi}</p>
-            <div className="flex justify-end space-x-2 mt-4">
-              <button
-                onClick={() => handleDelete(post.id)}
-                className="text-red-500 hover:text-red-700"
-              >
-                Delete
-              </button>
-              <button
-                onClick={() => setUpdatePost(post)}
-                className="text-blue-500 hover:text-blue-700"
-              >
-                Edit
-              </button>
-            </div>
-          </div>
-        ))}
+    <div className="dn dan">
+      <div className="header">
+        <button onClick={() => setShowTasks(!showTasks)} className="toggle-button">
+          {showTasks ? "Show Posts" : "Show Tasks"}
+        </button>
+        <button onClick={() => openPopup(showTasks ? "addTask" : "addPost")} className="add-button">
+          Add New
+        </button>
       </div>
 
-      {newPost && (
-        <div className="mt-6">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleAddNewPost();
-            }}
-            className="bg-white shadow-md rounded-lg p-4"
-          >
-            <h3 className="text-lg font-semibold mb-4">Add New Post</h3>
-            <div className="mb-4">
-              <label htmlFor="deskripsi" className="block text-gray-700">
-                Post Description
-              </label>
-              <textarea
-                id="deskripsi"
-                value={newPost.deskripsi}
-                onChange={(e) =>
-                  setNewPost({ ...newPost, deskripsi: e.target.value })
-                }
-                className="w-full p-2 border rounded-lg"
-                required
-              />
+      {showTasks ? (
+        <>
+          <h2>Tasks</h2>
+          {loadingTasks ? (
+            <p>Loading tasks...</p>
+          ) : (
+            <div className="grid">
+              {tasks.map((task) => (
+                <div key={task.id} className="card">
+                  <h4>{task.title}</h4>
+                  <p>{task.deskripsi}</p>
+                  <p>Deadline: {task.deadline}</p>
+                  <div className="action-buttons">
+                    <button onClick={() => handleDeleteTask(task.id)} className="delete-button">Delete</button>
+                    <button onClick={() => { setUpdateTask(task); openPopup("updateTask"); }} className="edit-button">Edit</button>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="flex justify-end space-x-2">
-              <button
-                type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                onClick={() => setNewPost(null)}
-                className="bg-gray-300 text-black px-4 py-2 rounded-lg"
-              >
-                Cancel
-              </button>
+          )}
+        </>
+      ) : (
+        <>
+          <h2>Posts</h2>
+          {loadingPosts ? (
+            <p>Loading posts...</p>
+          ) : (
+            <div className="grid">
+              {posts.map((post) => (
+                <div key={post.id} className="card">
+                  <p>{post.deskripsi}</p>
+                  <div className="action-buttons">
+                    <button onClick={() => handleDeletePost(post.id)} className="delete-button">Delete</button>
+                    <button onClick={() => { setUpdatePost(post); openPopup("updatePost"); }} className="edit-button">Edit</button>
+                  </div>
+                </div>
+              ))}
             </div>
-          </form>
-        </div>
+          )}
+        </>
       )}
 
-      {updatePost && (
-        <div className="mt-6">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              saveUpdate();
-            }}
-            className="bg-white shadow-md rounded-lg p-4"
-          >
-            <h3 className="text-lg font-semibold mb-4">Update Post</h3>
-            <div className="mb-4">
-              <label htmlFor="deskripsi" className="block text-gray-700">
-                Post Description
-              </label>
-              <textarea
-                id="deskripsi"
-                value={updatePost.deskripsi}
-                onChange={(e) =>
-                  setUpdatePost({ ...updatePost, deskripsi: e.target.value })
-                }
-                className="w-full p-2 border rounded-lg"
-                required
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <button
-                type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                onClick={() => setUpdatePost(null)}
-                className="bg-gray-300 text-black px-4 py-2 rounded-lg"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+      {showPopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <button onClick={closePopup} className="close-button closes">X</button>
+            {popupType === "addPost" && (
+              <>
+                <h3>Add New Post</h3>
+                <textarea value={newPost.deskripsi} onChange={(e) => setNewPost({ deskripsi: e.target.value })} />
+                <button onClick={handleAddNewPost}>Save</button>
+              </>
+            )}
+            {popupType === "updatePost" && updatePost && (
+              <>
+                <h3>Edit Post</h3>
+                <textarea
+                  value={updatePost.deskripsi}
+                  onChange={(e) => setUpdatePost({ ...updatePost, deskripsi: e.target.value })}
+                />
+                <button onClick={saveUpdatePost}>Update</button>
+              </>
+            )}
+            {popupType === "addTask" && (
+              <>
+                <h3>Add New Task</h3>
+                <input
+                  type="text"
+                  value={newTask.title}
+                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                  placeholder="Title"
+                />
+                <textarea
+                  value={newTask.deskripsi}
+                  onChange={(e) => setNewTask({ ...newTask, deskripsi: e.target.value })}
+                  placeholder="Description"
+                />
+                <input
+                  type="date"
+                  value={newTask.deadline}
+                  onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })}
+                />
+                <button onClick={handleAddNewTask}>Save</button>
+              </>
+            )}
+            {popupType === "updateTask" && updateTask && (
+              <>
+                <h3>Edit Task</h3>
+                <input
+                  type="text"
+                  value={updateTask.title}
+                  onChange={(e) => setUpdateTask({ ...updateTask, title: e.target.value })}
+                  placeholder="Title"
+                />
+                <textarea
+                  value={updateTask.deskripsi}
+                  onChange={(e) => setUpdateTask({ ...updateTask, deskripsi: e.target.value })}
+                  placeholder="Description"
+                />
+                <input
+                  type="date"
+                  value={updateTask.deadline}
+                  onChange={(e) => setUpdateTask({ ...updateTask, deadline: e.target.value })}
+                />
+                <button onClick={saveUpdateTask}>Update</button>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>

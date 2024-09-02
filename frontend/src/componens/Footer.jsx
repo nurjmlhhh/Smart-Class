@@ -1,15 +1,32 @@
-export default function Footer() {
-    return (
-        <footer className="footer footer-center p-10 bg-base-200 text-base-content rounded">
-            <div className="grid grid-flow-col gap-4">
-                <a className="link link-hover">About us</a>
-                <a className="link link-hover">Contact</a>
-                <a className="link link-hover">Jobs</a>
-                <a className="link link-hover">Press kit</a>
-            </div>
-            <div>
-                <p>Copyright © 2024 - All right reserved by nurjamilah</p>
-            </div>
-        </footer>
-    )
-}
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa'; // Importing social media icons
+import "../pages/style2.css";
+const Footer = () => {
+  return (
+    <footer className="footer">
+      <div className="container">
+        {/* Social Media Icons */}
+        <div className="social-icons">
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+            <FaFacebookF />
+          </a>
+          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+            <FaTwitter />
+          </a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+            <FaLinkedinIn />
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+            <FaInstagram />
+          </a>
+        </div>
+
+        {/* Bottom Text */}
+        <div className="bottom-text">
+          <p>&copy; {new Date().getFullYear()} SmartClass. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { Trash, SquarePen, PlusCircle, Search } from "lucide-react";
-import {jwtDecode} from 'jwt-decode'; // Import jwt-decode
+import { PlusCircle, Search, MessageCircleX, FilePenLine } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import "../pages/Dashboard.css";
 
 export default function Dashboard() {
   const [clas, setClas] = useState([]);
@@ -11,58 +12,46 @@ export default function Dashboard() {
   const [sortOrder, setSortOrder] = useState("asc");
   const sortBy = "id";
   const [search, setSearch] = useState("");
-  // const navigate = useNavigate();
-  // const [removeCookie] = useCookies(['user']);
 
-    const handleLogout = () => {
-        Cookies.remove('token');
-        alert('Logged out successfully!');
-        navigate('/login');
-    };
-  
   const token = Cookies.get("token");
-  const [idTeacher, setIdTeacher] = useState(Cookies.get("token")&&jwtDecode(Cookies.get("token")).id);
+  const [idTeacher, setIdTeacher] = useState(
+    Cookies.get("token") && jwtDecode(Cookies.get("token")).id
+  );
+
   useEffect(() => {
-    setIdTeacher(Cookies.get("token") && jwtDecode(Cookies.get("token")).id)
-    
-  },[]);
-  
-  console.log(idTeacher)
+    setIdTeacher(Cookies.get("token") && jwtDecode(Cookies.get("token")).id);
+  }, []);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/class/${idTeacher}`, {
-          headers: { "Authorization": `Bearer ${token}` },
-        });
+        const response = await fetch(
+          `http://localhost:3000/api/class/${idTeacher}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-        // if (!response.ok) {
-        //   throw new Error("Gagal mengambil data kelas, status: " + response.status);
-        // }
-
-        const data = await response.json(); // Parsing response ke JSON
-        setClas(data); // Menyimpan data ke state
-
+        const data = await response.json();
+        setClas(data);
       } catch (error) {
         console.error("Error fetching classes:", error.message);
       }
     };
 
-    fetchClasses(); // Memanggil fungsi async di dalam useEffect
-
-  }, [idTeacher, token]); // Hanya tergantung pada token
-
+    fetchClasses();
+  }, [idTeacher, token]);
 
   const handleAddNewclas = async () => {
     const classData = { ...newclas, id_teacher: idTeacher };
     try {
       const response = await fetch(`http://localhost:3000/api/class`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(classData),
       });
@@ -72,11 +61,10 @@ export default function Dashboard() {
       }
 
       const addedClass = await response.json();
-      setClas([...clas, addedClass]); // Update state class dengan kelas baru yang ditambahkan
-      setNewclas({ name: '', kode: '' }); // Reset form setelah sukses menambah kelas
-
+      setClas([...clas, addedClass]);
+      setNewclas({ name: "", kode: "" });
     } catch (error) {
-      console.error('Error adding class:', error.message);
+      console.error("Error adding class:", error.message);
     }
   };
 
@@ -113,7 +101,7 @@ export default function Dashboard() {
         if (!response.ok) {
           throw new Error("HTTP status " + response.status);
         }
-        return response.json();  // Pastikan server mengembalikan JSON jika kamu akan mem-parsing ini.
+        return response.json();
       })
       .then(() => {
         setClas((prev) =>
@@ -143,39 +131,59 @@ export default function Dashboard() {
     });
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <button onClick={() => setNewclas({ name: "", kode: "" })}>
+    <div className="dashboard-container">
+      <div className="header">
+        <button
+          className="add-button"
+          onClick={() => setNewclas({ name: "", kode: "" })}
+        >
           <PlusCircle />
         </button>
-        <div className="flex items-center gap-1 w-1/5">
+        <div className="search-container">
           <Search />
           <input
             type="text"
-            className="bg-gray-100 w-full p-4 gap-2 rounded-xl"
+            className="search-input"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search classes..."
           />
         </div>
-        <div>
-          <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
-            Sort by {sortOrder === "asc" ? "Descending" : "Ascending"}
-          </button>
-        </div>
+        <button
+          className="sort-button"
+          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+        >
+          Sort by {sortOrder === "asc" ? "Descending" : "Ascending"}
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="class-grid">
         {filterData.map((clas) => (
-          <div key={clas.id} className="bg-white shadow-md rounded-lg p-4" onClick={() => navigate(`/class/${clas.id}`)}>
-            <h2 className="text-xl font-semibold mb-2">{clas.name}</h2>
-            <p className="text-gray-700">Kode: {clas.kode}</p>
-            <div className="flex justify-end space-x-2 mt-4">
-              <button onClick={() => handleDelete(clas.id)} className="text-red-500 hover:text-red-700">
-                <Trash />
+          <div
+            key={clas.id}
+            className="class-card"
+            onClick={() => navigate(`/class/${clas.id}`)}
+          >
+            <h2 className="class-name">{clas.name}</h2>
+            <p className="class-code">Kode: {clas.kode}</p>
+            <div className="card-actions">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(clas.id);
+                }}
+                className="delete-button"
+              >
+                <MessageCircleX />
               </button>
-              <button onClick={() => setUpdateclas(clas)} className="text-blue-500 hover:text-blue-700">
-                <SquarePen />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setUpdateclas(clas);
+                }}
+                className="edit-button"
+              >
+                <FilePenLine />
               </button>
             </div>
           </div>
@@ -183,110 +191,129 @@ export default function Dashboard() {
       </div>
 
       {newclas && (
-        <div className="mt-6">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleAddNewclas();
-            }}
-            className="bg-white shadow-md rounded-lg p-4"
-          >
-            <h3 className="text-lg font-semibold mb-4">Add New Class</h3>
-            <div className="mb-4">
-              <label htmlFor="name" className="block text-gray-700">Class Name</label>
-              <input
-                type="text"
-                id="name"
-                value={newclas.name}
-                onChange={(e) => setNewclas({ ...newclas, name: e.target.value })}
-                className="w-full p-2 border rounded-lg"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="kode" className="block text-gray-700">Class Code</label>
-              <input
-                type="text"
-                id="kode"
-                value={newclas.kode}
-                onChange={(e) => setNewclas({ ...newclas, kode: e.target.value })}
-                className="w-full p-2 border rounded-lg"
-                required
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-lg">
-                Save
-              </button>
-              <button type="button" onClick={() => setNewclas(null)} className="bg-gray-300 text-black px-4 py-2 rounded-lg">
-                Cancel
-              </button>
-            </div>
-          </form>
+        <div className="overlay">
+          <div className="form-container">
+            <button className="close-button" onClick={() => setNewclas(null)}>
+              ✖
+            </button>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleAddNewclas();
+              }}
+              className="form"
+            >
+              <h3 className="form-title">Add New Class</h3>
+              <div className="form-group">
+                <label htmlFor="name" className="form-label">
+                  Class Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  value={newclas.name}
+                  onChange={(e) =>
+                    setNewclas({ ...newclas, name: e.target.value })
+                  }
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="kode" className="form-label">
+                  Class Code
+                </label>
+                <input
+                  type="text"
+                  id="kode"
+                  value={newclas.kode}
+                  onChange={(e) =>
+                    setNewclas({ ...newclas, kode: e.target.value })
+                  }
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div className="form-actions">
+                <button type="submit" className="submit-button">
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNewclas(null)}
+                  className="cancel-button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
       {updateclas && (
-        <div className="mt-6">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              saveUpdate();
-            }}
-            className="bg-white shadow-md rounded-lg p-4"
-          >
-            <h3 className="text-lg font-semibold mb-4">Update Class</h3>
-            <div className="mb-4">
-              <label htmlFor="name" className="block text-gray-700">Class Name</label>
-              <input
-                type="text"
-                id="name"
-                value={updateclas.name}
-                onChange={(e) =>
-                  setUpdateclas({ ...updateclas, name: e.target.value })
-                }
-                className="w-full p-2 border rounded-lg"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="kode" className="block text-gray-700">Class Code</label>
-              <input
-                type="text"
-                id="kode"
-                value={updateclas.kode}
-                onChange={(e) =>
-                  setUpdateclas({ ...updateclas, kode: e.target.value })
-                }
-                className="w-full p-2 border rounded-lg"
-                required
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-lg">
-                Save
-              </button>
-              <button type="button" onClick={() => setUpdateclas(null)} className="bg-gray-300 text-black px-4 py-2 rounded-lg">
-                Cancel
+        <div className="overlay">
+          <div className="form-container">
+            <button
+              className="close-button"
+              onClick={() => setUpdateclas(null)}
+            >
+              ✖
+            </button>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                saveUpdate();
+              }}
+              className="form"
+            >
+              <h3 className="form-title">Update Class</h3>
+              <div className="form-group">
+                <label htmlFor="name" className="form-label">
+                  Class Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  value={updateclas.name}
+                  onChange={(e) =>
+                    setUpdateclas({ ...updateclas, name: e.target.value })
+                  }
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="kode" className="form-label">
+                  Class Code
+                </label>
+                <input
+                  type="text"
+                  id="kode"
+                  value={updateclas.kode}
+                  onChange={(e) =>
+                    setUpdateclas({ ...updateclas, kode: e.target.value })
+                  }
+                  className="form-input"
+                  required
+                />
+              </div>
+              <div className="form-actions">
+                <button type="submit" className="submit-button">
+                  Save
                 </button>
-            </div>
-          </form>
+                <button
+                  type="button"
+                  onClick={() => setUpdateclas(null)}
+                  className="cancel-button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
-      
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 mt-8">
-        <div className="w-full max-w-lg bg-white p-8 rounded-lg shadow-md text-center">
-          <h1 className="text-3xl font-bold text-blue-600 mb-6">Selamat Datang</h1>
-          <button
-            onClick={handleLogout}
-            className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition duration-200"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
     </div>
-
-    
   );
 }
