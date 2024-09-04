@@ -14,7 +14,7 @@ Smart Class adalah platform manajemen pembelajaran yang menyederhanakan cara gur
 - Logout
 
 ## Diagram ERD
-![Diagram ER](../frontend/src/assets/images/ERD_SmartClass.png) 
+![Diagram ER](./frontend/src/assets/images/ERD_SmartClass.png) 
 
 ## Tech stack 
 - Frontend: react.js, tailwind CSS
