@@ -1,5 +1,5 @@
 import "../pages/style2.css";
-import logoImage from '../assets/images/SmartClass.png';  // Sesuaikan path sesuai dengan direktori Anda
+import logoImage from '../assets/images/SmartClass.png';  
 
 export default function Home() {
   return (

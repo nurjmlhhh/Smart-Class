@@ -1,8 +1,22 @@
-# React + Vite
+# Smart Class
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Smart Class adalah platform manajemen pembelajaran yang menyederhanakan cara guru dan siswa berinteraksi secara digital. Dengan fitur untuk membuat kelas, membagikan materi, dan mengelola tugas, Smart Class menjadikan pembelajaran lebih efisien dan terorganisir. Kami berkomitmen untuk menyediakan pengalaman belajar yang fleksibel dan terintegrasi, baik untuk pembelajaran jarak jauh maupun di kelas.
 
-Currently, two official plugins are available:
+## fitur
+- Registrasi dan Login
+- Home 
+- Class (CRUD, search, sorting asc & desc)
+- Di dalam hal. Class
+    - Post (CRUD)
+    - Task (CRUD)
+- Profil (CRUD)
+- About
+- Logout
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Diagram ERD
+![Diagram ER](../frontend/src/assets/images/ERD_SmartClass.png) 
+
+## Tech stack 
+- Frontend: react.js, tailwind CSS
+- Backend: Node.js, Express
+- DB: postgresSql

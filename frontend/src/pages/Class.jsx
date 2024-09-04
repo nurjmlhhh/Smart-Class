@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import { PlusCircle, Search, MessageCircleX, FilePenLine } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import "../pages/Dashboard.css";
+import "../pages/class.css";
 
 export default function Class() {
   const [clas, setClas] = useState([]);

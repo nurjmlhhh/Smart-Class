@@ -21,7 +21,9 @@ export default function Post() {
 
   const convertToDate = (isoString) => {
     const date = new Date(isoString);
-    return date.toISOString().split('T')[0];
+    const timezoneOffset = date.getTimezoneOffset() * 60000; // Menghitung offset zona waktu
+    const localDate = new Date(date.getTime() - timezoneOffset);
+    return localDate.toISOString().split('T')[0];
   };
 
   const fetchPosts = useCallback(async () => {

@@ -1,4 +1,4 @@
-import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa'; // Importing social media icons
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa'; 
 import "../pages/style2.css";
 const Footer = () => {
   return (
@@ -20,7 +20,6 @@ const Footer = () => {
           </a>
         </div>
 
-        {/* Bottom Text */}
         <div className="bottom-text">
           <p>&copy; {new Date().getFullYear()} SmartClass. All rights reserved.</p>
         </div>
