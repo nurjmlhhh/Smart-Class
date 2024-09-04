@@ -1,12 +1,14 @@
 import { useState } from "react";
 import "../pages/login.css";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
-    role: "student", // Role default
   });
 
   const handleChange = (e) => {
@@ -25,7 +27,9 @@ function Register() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
+        
       });
+      navigate("/");
 
       if (response.ok) {
         const result = await response.text();
@@ -46,9 +50,6 @@ function Register() {
         <h2 className="register-title">Register</h2>
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
-            {/* <label htmlFor="username" className="form-label">
-              Username:
-            </label> */}
             <input
               type="text"
               id="username"
@@ -56,13 +57,11 @@ function Register() {
               value={formData.username}
               onChange={handleChange}
               required
-              className="form-input" placeholder="Username"
+              className="form-input"
+              placeholder="Username"
             />
           </div>
           <div className="form-group">
-            {/* <label htmlFor="email" className="form-label">
-              Email:
-            </label> */}
             <input
               type="email"
               id="email"
@@ -70,13 +69,11 @@ function Register() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="form-input" placeholder="Email"
+              className="form-input"
+              placeholder="Email"
             />
           </div>
           <div className="form-group">
-            {/* <label htmlFor="password" className="form-label">
-              Password:
-            </label> */}
             <input
               type="password"
               id="password"
@@ -84,28 +81,20 @@ function Register() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="form-input" placeholder="Password"
+              className="form-input"
+              placeholder="Password"
             />
-          </div>
-          <div className="form-group">
-            <label htmlFor="role" className="form-label">
-              Role:
-            </label>
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              required
-              className="form-select"
-            >
-              <option value="student">Student</option>
-              <option value="teacher">Teacher</option>
-            </select>
           </div>
           <button type="submit" className="submit-button">
             Register
           </button>
+          <div className="register-link">
+            <p>
+              Sudah punya akun?
+              <span onClick={() => navigate(`/`)}> Login</span>
+            </p>
+          </div>
+
         </form>
       </div>
     </div>

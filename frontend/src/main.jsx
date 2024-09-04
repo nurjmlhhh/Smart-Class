@@ -8,8 +8,10 @@ import Register from './pages/Register.jsx'
 import Login from './pages/Login.jsx'
 import { createBrowserRouter } from "react-router-dom";
 import { RouterProvider } from "react-router-dom";
-import Dashboard from './pages/Dashboard.jsx'
+// import Dashboard from './pages/Dashboard.jsx'
 import Class from './pages/Class.jsx'
+import Post from './pages/Post.jsx'
+import Profil from './pages/Profil.jsx'
 
 const router = createBrowserRouter([
   {
@@ -17,12 +19,26 @@ const router = createBrowserRouter([
     element : <App />,
     children : [
       {
-        path : "/dashboard",
-        element : <Dashboard />
+        path : "/",
+        element : <Login />
       },
       {
-        path : "/",
+        path : "/register",
+        element : <Register />
+      },
+
+      // {
+      //   path : "/dashboard",
+      //   element : <Dashboard />
+      // },
+      {
+        path : "class",
+        element : <Class />
+      },
+      {
+        path : "/home",
         element : <Home />
+        // element: <Login />
       },
 
       {
@@ -30,16 +46,16 @@ const router = createBrowserRouter([
         element : <About />
       },
       {
-        path : "/login",
-        element : <Login />
+        path : "/profil",
+        element : <Profil />
       },
+      // {
+      //   path : "/class/:id",
+      //   element : <Class />
+      // },
       {
-        path : "/register",
-        element : <Register />
-      },
-      {
-        path : "/class/:id",
-        element : <Class />
+        path : "/post/:id",
+        element : <Post />
       },
     ],
   },
